@@ -4,20 +4,21 @@ import (
 	"math"
 )
 
-var sqtwopi float64 = math.Sqrt(2 * math.Pi)
-var IVPrecision = 0.00001
+var (
+	sqtwopi     float64 = math.Sqrt(2 * math.Pi)
+	IVPrecision         = 0.00001
+)
 
 func PriceBlackScholes(callType bool, underlying float64, strike float64, timeToExpiration float64, volatility float64, riskFreeInterest float64, dividend float64) float64 {
-
 	var sign float64
 	if callType {
 		if timeToExpiration <= 0 {
-			return math.Abs(underlying - strike)
+			return math.Max(0, underlying-strike)
 		}
 		sign = 1
 	} else {
 		if timeToExpiration <= 0 {
-			return math.Abs(strike - underlying)
+			return math.Max(0, strike-underlying)
 		}
 		sign = -1
 	}
@@ -50,6 +51,7 @@ func d2f(d1 float64, volatilityWithExpiration float64) float64 {
 	d2 := d1 - volatilityWithExpiration
 	return d2
 }
+
 func d1pdff(underlying float64, strike float64, timeToExpiration float64, volatility float64, riskFreeInterest float64, dividend float64) float64 {
 	vt := volatility * (math.Sqrt(timeToExpiration))
 	d1 := d1f(underlying, strike, timeToExpiration, volatility, riskFreeInterest, dividend, vt)
@@ -91,7 +93,6 @@ func BSGamma(underlying float64, strike float64, timeToExpiration float64, volat
 }
 
 func BSTheta(callType bool, underlying float64, strike float64, timeToExpiration float64, volatility float64, riskFreeInterest float64, dividend float64) float64 {
-
 	var sign float64
 	if !callType {
 		sign = -1
